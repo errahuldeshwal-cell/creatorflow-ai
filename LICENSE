@@ -1,0 +1,39 @@
+# Mission IG Follower
+
+An AI-powered personal Instagram content automation platform.
+
+## Status
+
+🚧 Under Development
+
+## Current Sprint
+
+Sprint 2 - Product Design
+
+## Repository Structure
+
+```
+backend/
+frontend/
+automation/
+ai/
+docs/
+scripts/
+assets/
+tests/
+```
+
+## Vision
+
+Build a personal AI assistant that helps create high-quality Instagram content, organize content, assist with publishing workflows, and provide analytics to improve organic growth.
+
+## Roadmap
+
+- Sprint 1 - Foundation ✅
+- Sprint 2 - Product Design 🚧
+- Sprint 3 - UI Design
+- Sprint 4 - Backend
+- Sprint 5 - AI Engine
+- Sprint 6 - Content Studio
+- Sprint 7 - Publishing Workflow
+- Sprint 8 - Analytics
