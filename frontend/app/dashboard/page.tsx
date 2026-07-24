@@ -1,78 +1,208 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+import { getCurrentUser } from "@/src/services/auth";
+
+
 export default function DashboardPage() {
-  return (
-    <div
-      style={{
-        maxWidth: "900px",
-        margin: "40px auto",
-        padding: "20px",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <h1>🚀 Mission IG Follower Dashboard</h1>
 
-      <hr />
+    const router = useRouter();
 
-      <h2>Welcome!</h2>
+    const [user, setUser] = useState<any>(null);
+    const [profile, setProfile] = useState<any>(null);
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          gap: "20px",
-          marginTop: "20px",
-        }}
-      >
-        <div
-          style={{
-            border: "1px solid #ddd",
-            padding: "20px",
-            borderRadius: "10px",
-          }}
-        >
-          <h3>👤 User Information</h3>
-          <p>Email : Logged In User</p>
-          <p>Status : Active</p>
+
+    useEffect(() => {
+
+        const loadData = async () => {
+
+            try {
+
+                // Get logged in user
+                const userData = await getCurrentUser();
+
+                setUser(userData);
+
+
+                // Get Instagram Profile
+
+                const token = localStorage.getItem(
+                    "access_token"
+                );
+
+
+                const response = await fetch(
+                    "http://127.0.0.1:8000/api/profile/me",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+
+
+                const profileData = await response.json();
+
+
+                setProfile(profileData);
+
+
+            }
+            catch(error){
+
+                console.error(
+                    "Dashboard loading error",
+                    error
+                );
+
+                router.push("/login");
+
+            }
+
+        };
+
+
+        loadData();
+
+
+    },[router]);
+
+
+
+    const logout =()=>{
+
+        localStorage.removeItem(
+            "access_token"
+        );
+
+
+        document.cookie =
+        "access_token=; path=/; max-age=0;";
+
+
+        router.push("/login");
+
+    };
+
+
+
+    if(!user){
+
+        return (
+            <div>
+                Loading User...
+            </div>
+        );
+
+    }
+
+
+
+    return (
+
+        <div style={{padding:"40px"}}>
+
+
+            <h1>
+                🚀 Mission IG Follower Dashboard
+            </h1>
+
+
+            <h2>
+                Welcome {user.full_name || user.username}
+            </h2>
+
+
+            <p>
+                Email: {user.email}
+            </p>
+
+
+
+            <hr />
+
+
+
+            <h2>
+                Instagram Profile
+            </h2>
+
+
+            <p>
+                Username:
+                {
+                    profile?.instagram_username || 
+                    "Not Connected"
+                }
+            </p>
+
+
+            <div style={{
+                display:"flex",
+                gap:"30px",
+                marginTop:"30px"
+            }}>
+
+
+                <div>
+                    <h3>
+                        Followers
+                    </h3>
+
+                    <h2>
+                        {profile?.followers || 0}
+                    </h2>
+
+                </div>
+
+
+
+                <div>
+                    <h3>
+                        Posts
+                    </h3>
+
+                    <h2>
+                        {profile?.posts || 0}
+                    </h2>
+
+                </div>
+
+
+
+                <div>
+                    <h3>
+                        Engagement
+                    </h3>
+
+                    <h2>
+                        {profile?.engagement || 0}%
+                    </h2>
+
+                </div>
+
+
+            </div>
+
+
+
+
+            <button
+                onClick={logout}
+                style={{
+                    marginTop:"40px"
+                }}
+            >
+
+                Logout
+
+            </button>
+
+
         </div>
 
-        <div
-          style={{
-            border: "1px solid #ddd",
-            padding: "20px",
-            borderRadius: "10px",
-          }}
-        >
-          <h3>📈 Statistics</h3>
-          <p>Instagram Accounts : 0</p>
-          <p>Campaigns : 0</p>
-          <p>Followers Gained : 0</p>
-        </div>
+    );
 
-        <div
-          style={{
-            border: "1px solid #ddd",
-            padding: "20px",
-            borderRadius: "10px",
-          }}
-        >
-          <h3>⚙️ System Status</h3>
-          <p>Backend : ✅ Online</p>
-          <p>Database : ✅ Connected</p>
-        </div>
-
-        <div
-          style={{
-            border: "1px solid #ddd",
-            padding: "20px",
-            borderRadius: "10px",
-          }}
-        >
-          <h3>🎯 Next Module</h3>
-          <p>Instagram Account Connection</p>
-          <p>Coming Soon...</p>
-        </div>
-      </div>
-    </div>
-  );
 }
