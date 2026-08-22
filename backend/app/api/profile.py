@@ -1,42 +1,41 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from app.core.security import get_current_user
 from app.db.database import get_db
 from app.models.instagram_profile import InstagramProfile
 from app.models.user import User
-from app.schemas.profile import ProfileResponse
+from app.core.security import get_current_user
+
 
 router = APIRouter(
     prefix="/api/profile",
-    tags=["Profile"]
+    tags=["Instagram Profile"]
 )
 
 
-@router.get("/me", response_model=ProfileResponse)
+@router.get("/")
 def get_profile(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
-    profile = (
-        db.query(InstagramProfile)
-        .filter(
-            InstagramProfile.user_id == current_user.id
-        )
-        .first()
-    )
+    profile = db.query(InstagramProfile).filter(
+        InstagramProfile.user_id == current_user.id
+    ).first()
 
-    if profile is None:
-
+    if not profile:
         profile = InstagramProfile(
             user_id=current_user.id,
             instagram_user_id=None,
             instagram_username="",
             access_token=None,
+            token_expiry=None,
             followers=0,
             posts=0,
             engagement=0,
-            profile_image=None
+            profile_image=None,
+            is_connected=False,
+            connected_at=None,
+            last_sync=None
         )
 
         db.add(profile)
